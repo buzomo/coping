@@ -13,15 +13,21 @@
             padding: 0;
             overflow: hidden;
         }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             font-family: Arial, sans-serif;
-            background: linear-gradient(45deg, pink, lightblue);
+            background: linear-gradient(45deg, #ff9a9e, #fbc2eb, #a18cd1, #fad0c4, #ffecd2, #f6d365, #fda085, #fbc2eb, #ff9a9e);
             background-size: 400% 400%;
-            animation: gradientAnimation 1s ease infinite;
+            animation: gradientAnimation 20s ease infinite;
         }
         .advice {
             white-space: pre-wrap;
@@ -31,7 +37,8 @@
             text-align: center;
             padding: 40px;
             border-radius: 10px;
-            color: darkblue;
+            color: rgba(69, 29, 177, 0.8);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             font-family: "M PLUS Rounded 1c", sans-serif;
         }
     </style>
@@ -161,13 +168,46 @@
             }
             currentInterval = setInterval(updateAdvice, duration);
 
+            adviceElement.style.transform = 'scale(0.5) rotate(10deg)';
+            adviceElement.style.transition = 'transform 1.5s ease-in-out, opacity 1.5s ease-in-out';
             setTimeout(() => {
             adviceElement.innerText = newAdvice;
-            adviceElement.style.transition = 'opacity 1s';
             adviceElement.style.opacity = 1;
+            adviceElement.style.transform = 'scale(1) rotate(0deg)';
             displayTransitionDuration(duration);
-            }, 1000);
+
+            // 文字がゆらゆらするアニメーションを追加
+            adviceElement.style.animation = 'wobble 2s infinite';
+            }, 1500);
         }
+
+        // 文字がゆがむエフェクトのスタイルを追加
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes ripple {
+            0% {
+                transform: scale(1);
+                filter: blur(0);
+            }
+            50% {
+                transform: scale(1.05);
+                filter: blur(2px);
+            }
+            100% {
+                transform: scale(1);
+                filter: blur(0);
+            }
+            }
+            .ripple-effect {
+            display: inline-block;
+            animation: ripple 2s infinite;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // アドバイス要素に波紋エフェクトを追加
+        const adviceElement = document.getElementById('advice');
+        adviceElement.classList.add('ripple-effect');
 
         // 初回表示
         updateAdvice();
