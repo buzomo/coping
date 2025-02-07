@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+
+    <title>ランダムアドバイス</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, pink, lightblue);
+            background-size: 400% 400%;
+            animation: gradientAnimation 1s ease infinite;
+        }
+        .advice {
+            white-space: pre-wrap;
+            max-width: 1000px;
+            font-size: 5em;
+            font-weight: bold;
+            text-align: center;
+            padding: 40px;
+            border-radius: 10px;
+            color: darkblue;
+            font-family: "M PLUS Rounded 1c", sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="advice" id="advice"></div>
+
+    <script>
+        function calculateTransitionDuration(text) {
+            const baseDuration = 440; // 基本の遷移時間
+            const additionalDurationPerCharacter = 420; // 文字ごとに追加する遷移時間
+            return baseDuration + (text.length * additionalDurationPerCharacter);
+        }
+
+        function displayTransitionDuration(duration) {
+            const durationElement = document.getElementById('duration');
+            if (!durationElement) {
+                const newDurationElement = document.createElement('div');
+                newDurationElement.id = 'duration';
+                newDurationElement.style.position = 'absolute';
+                newDurationElement.style.bottom = '10px';
+                newDurationElement.style.right = '10px';
+                newDurationElement.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                newDurationElement.style.padding = '10px';
+                newDurationElement.style.borderRadius = '5px';
+                newDurationElement.style.fontSize = '1em';
+                newDurationElement.style.color = 'darkblue';
+                document.body.appendChild(newDurationElement);
+                newDurationElement.innerText = `Transition Duration: ${duration}ms`;
+            } else {
+                durationElement.innerText = `Transition Duration: ${duration}ms`;
+            }
+        }
+
+        const advices = [
+        // 食べ物・飲み物系
+        "最寄りの自販機に歩いて行き、 右下のものを買ってみよう",
+        "セブンイレブンに行って   金のビーフシチューを買ってこよう",
+        "成城石井かカルディで、 気になった海外のお菓子を買おう",
+        "ファミマの「スフレ・プリン」を買って   スプーンで豪快にすくおう",
+        "近所のパン屋で   一番高いパンを買ってみよう",
+        "味噌汁にちょい足し （チーズ、納豆、バターなど） して遊ぼう",
+        "いつもと違うスーパーに行き、 旬の野菜を一つ買おう",
+        "豆から挽いたコーヒーを  ゆっくり淹れてみよう",
+        "コンビニのアイス売り場で   見たことないアイスを買おう",
+        "駅ナカの立ち食いそば屋で   天ぷらそばを食べよう",
+    
+        // 思い出・懐かしみ系
+        "今までのサイクリング体験で   良かったことを思い出そう",
+        "誰かにプレゼントを贈ったときのことを   思い出そう",
+        "「ちびまる子ちゃん」 を   読み返そう",
+        "昔の携帯・PCのフォルダをあさって、   懐かしい写真を探そう",
+        "10年前によく聞いていた音楽を   再生しよう",
+        "大学・高校の頃の   筆記用具を探してみよう",
+        "好きだったおもちゃや   ゲームを思い出そう",
+        "子供のころ好きだった   お菓子を買ってみよう",
+        "古い手帳やメモ帳を   見返してみよう",
+        "アルバムを開いて   昔の写真を見よう",
+        "初めて一人で行った場所を   思い出してみよう",
+        "学生時代に   夢中になっていたことを思い出そう",
+        "今までで一番   笑った出来事を思い出そう",
+        "子供の頃の   憧れの職業を考えてみよう",
+        "昔の流行語を   いくつか思い出してみよう",
+        "小学校の時に   よく遊んだ遊びを思い出そう",
+        "昔好きだったキャラの   名セリフを思い出そう",
+        "学生時代に   よく通った店を思い出そう",
+        "自分が人生で   一番感動した映画を思い出そう",
+        "親がよく作ってくれた料理を   思い出してみよう",
+    
+        // 面白妄想系
+        "もしも今100万円もらえたら、 何に使うか真剣に考えよう",
+        "異世界転生したら、 どんな職業に就くか考えてみよう",
+        "自分がRPGの主人公だったら、 初期装備は何か考えてみよう",
+        "自分が悪の組織のボスなら、 どんな作戦を立てるか考えよう",
+        "「タイムスリップして過去の自分に 一つだけアドバイスできる」 何を言うか考えよう",
+        "自分が完全に透明になったら、 何をするか考えてみよう",
+        "動物になれるとしたら、 どの動物がいいか真剣に考えよう",
+        "自分が超能力を得るなら、 どんな能力がいいか考えよう",
+        "今の仕事をファンタジー世界で どう活かせるか考えてみよう",
+        "好きな映画の世界に1日だけ 入れるなら、 何をするか考えよう",
+        "10年後の自分が何をしているか 勝手に予想してみよう",
+        "もし一日だけ   子供に戻れたら 何をするか考えよう",
+        "宇宙人に遭遇したら   何を話すか考えてみよう",
+        "人類最後の一人になったら   何をするか想像してみよう",
+        "自分専用の秘密基地を作るなら どんな設備を入れるか考えよう",
+        "絶対に捕まらない設定で   いたずらを考えてみよう",
+        "もしも明日から   猫として生きるなら 何をするか考えよう",
+        "人生を一本の映画にするなら   タイトルは何にするか考えよう",
+        "「人生で一度だけ   誰とでも会える権利」があったら 誰に会うか考えよう",
+    
+        // デジタルデトックス完全対応
+        "スマホを机に置き、   30分間触らないチャレンジ",
+        "部屋の時計だけを見て、   15分間ボーッと過ごしてみよう",
+        "夜の散歩に出て、   空を見上げてみよう",
+        "積みっぱなしの本を   1ページでも読もう",
+        "耳をすませて、   5種類の音を聞き分けよう",
+        "窓を開けて、   風の音をじっくり聞こう",
+        "布団に横になって、   目を閉じて何も考えない時間を作ろう",
+        "部屋の電気を消して   静かに過ごそう",
+        "ノートに   適当に絵や線を描いてみよう",
+        "ラジオをつけて   しばらく流してみよう",
+        "自分の手を   じっくり観察してみよう",
+        "布団の中で   じっくり指のストレッチをしよう"
+    ];
+    
+        let lastAdviceIndex = -1;
+        let currentInterval;
+
+        function getRandomAdvice() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * advices.length);
+            } while (randomIndex === lastAdviceIndex);
+            lastAdviceIndex = randomIndex;
+            return advices[randomIndex];
+        }
+
+        function updateAdvice() {
+            const adviceElement = document.getElementById('advice');
+            adviceElement.style.opacity = 0;
+            const newAdvice = getRandomAdvice();
+            const duration = calculateTransitionDuration(newAdvice);
+            
+            // 既存のインターバルをクリアして新しい時間で設定
+            if (currentInterval) {
+            clearInterval(currentInterval);
+            }
+            currentInterval = setInterval(updateAdvice, duration);
+
+            setTimeout(() => {
+            adviceElement.innerText = newAdvice;
+            adviceElement.style.transition = 'opacity 1s';
+            adviceElement.style.opacity = 1;
+            displayTransitionDuration(duration);
+            }, 1000);
+        }
+
+        // 初回表示
+        updateAdvice();
+    </script>
+</body>
+</html>
